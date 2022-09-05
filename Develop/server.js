@@ -2,6 +2,8 @@
 const express = require("express");
 const fs = require("fs");
 const path = require("path");
+const util = require("util");
+const { v1: uuidv1 } = require("uuid");
 
 // Initialize express app
 const app = express();
@@ -17,7 +19,7 @@ app.use(express.static("public"));
 //set up get routes including wildcard route for all outside paths
 
 app.get("/api/notes", (req, res) => {
-  res.json(allNotes.slice(1));
+  readFromFile("./db/db.json").then((data) => res.json(JSON.parse(data)));
 });
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "./public/index.html"));
@@ -29,28 +31,53 @@ app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "./public/index.html"));
 });
 
-//make function for a new note
-function makeNewNote(body, notesArray) {
-  const newNote = body;
-  if (!Array.isArray(notesArray)) notesArray = [];
+//set up the functions to be called on
+const readFromFile = util.promisify(fs.readFile);
 
-  if (notesArray.length === 0) notesArray.push(0);
-
-  body.id = notesArray[0];
-  notesArray[0]++;
-
-  notesArray.push(newNote);
-  fs.writeFileSync(
-    path.join(__dirname, "./db/db.json"),
-    JSON.stringify(notesArray, null, 2)
+const writeToFile = (destination, content) =>
+  fs.writeFile(destination, JSON.stringify(content, null, 4), (err) =>
+    err ? console.error(err) : console.info(`\nData written to ${destination}`)
   );
-  return newNote;
-}
+const readAndAppend = (content, file) => {
+  fs.readFile(file, "utf8", (err, data) => {
+    if (err) {
+      console.error(err);
+    } else {
+      const parsedData = JSON.parse(data);
+      parsedData.push(content);
+      writeToFile(file, parsedData);
+    }
+  });
+};
+//make function for a new note
+// function makeNewNote(body, notesArray) {
+//   const newNote = body;
+//   if (!Array.isArray(notesArray)) notesArray = [];
+
+//   body.id = notesArray[0];
+//   notesArray[0]++;
+
+//   notesArray.push(newNote);
+//   fs.writeFileSync(
+//     path.join(__dirname, "./db/db.json"),
+//     JSON.stringify(notesArray, null, 2)
+//   );
+//   return newNote;
+// }
 
 //set up post route
 app.post("/api/notes", (req, res) => {
-  const newNote = makeNewNote(req.body, allNotes);
-  res.json(newNote);
+  const { title, text } = req.body;
+
+  if (req.body) {
+    const newNote = {
+      title,
+      text,
+      id: uuidv1(),
+    };
+    readAndAppend(newNote, "./db/db.json");
+    res.json(newNote);
+  }
 });
 
 //set up function to delete note
