@@ -12,7 +12,7 @@ const allNotes = require("./db/db.json");
 // Setup data parsing
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-app.use(express.static(__dirname));
+app.use(express.static("public"));
 
 //set up get routes including wildcard route for all outside paths
 
@@ -40,7 +40,7 @@ function makeNewNote(body, notesArray) {
   notesArray[0]++;
 
   notesArray.push(newNote);
-  fs.writeFile(
+  fs.writeFileSync(
     path.join(__dirname, "./db/db.json"),
     JSON.stringify(notesArray, null, 2)
   );
@@ -60,7 +60,7 @@ function deleteNote(id, notesArray) {
 
     if (note.id == id) {
       notesArray.splice(i, 1);
-      fs.writeFile(
+      fs.writeFileSync(
         path.join(__dirname, "./db/db.json"),
         JSON.stringify(notesArray, null, 2)
       );

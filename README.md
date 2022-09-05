@@ -21,7 +21,7 @@ N/A
 
 ## Usage
 
-To run the app, open the link provided in your browser and click "Get Started." It will then re-direct to the notes html page and allow the user to add their input.'
+To run the app, open the link provided in your browser and click "Get Started." It will then re-direct to the notes html page and allow the user to add their input.
 
 ## Contributions
 
