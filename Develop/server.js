@@ -7,7 +7,7 @@ const path = require("path");
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-const allNotes = require("./Develop/db/db.json");
+const allNotes = require("./db/db.json");
 
 // Setup data parsing
 app.use(express.urlencoded({ extended: true }));
@@ -48,7 +48,7 @@ function makeNewNote(body, notesArray) {
 }
 
 //set up post route
-app.post("./api/notes", (req, res) => {
+app.post("/api/notes", (req, res) => {
   const newNote = makeNewNote(req.body, allNotes);
   res.json(newNote);
 });
