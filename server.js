@@ -49,6 +49,21 @@ const readAndAppend = (content, file) => {
     }
   });
 };
+//make function for a new note
+// function makeNewNote(body, notesArray) {
+//   const newNote = body;
+//   if (!Array.isArray(notesArray)) notesArray = [];
+
+//   body.id = notesArray[0];
+//   notesArray[0]++;
+
+//   notesArray.push(newNote);
+//   fs.writeFileSync(
+//     path.join(__dirname, "./db/db.json"),
+//     JSON.stringify(notesArray, null, 2)
+//   );
+//   return newNote;
+// }
 
 //set up post route
 app.post("/api/notes", (req, res) => {
